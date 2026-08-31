@@ -13,13 +13,17 @@ const shoppingList = document.querySelector('#shopping-list');
 const shoppingSummary = document.querySelector('#shopping-summary');
 const copyShoppingButton = document.querySelector('#copy-shopping');
 const clearPlanButton = document.querySelector('#clear-plan');
+const polaroidWall = document.querySelector('#polaroid-wall');
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const FAMILY = ['Ivan', 'Kelly', 'Leo', 'Elijah'];
 const PLAN_STORAGE_KEY = 'langton-cox-doha-week-plan-v1';
+const RATING_STORAGE_KEY = 'langton-cox-doha-ratings-v1';
 
 let activeFilter = 'All';
 let searchTerm = '';
 let weekPlan = loadWeekPlan();
+let ratings = loadRatings();
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({
   '&': '&amp;',
@@ -49,6 +53,69 @@ function saveWeekPlan() {
   }
 }
 
+function loadRatings() {
+  try {
+    return JSON.parse(localStorage.getItem(RATING_STORAGE_KEY) || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveRatings() {
+  try {
+    localStorage.setItem(RATING_STORAGE_KEY, JSON.stringify(ratings));
+  } catch (error) {
+    // Ratings remain available for the current page if storage is unavailable.
+  }
+}
+
+function recipeRating(id) {
+  const entry = ratings[id] || {};
+  const scores = FAMILY.map(person => Number(entry.scores?.[person])).filter(score => score >= 1 && score <= 5);
+  if (!scores.length) return null;
+  return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+}
+
+function ratingText(id) {
+  const average = recipeRating(id);
+  return average ? `${average.toFixed(1)} ★` : '';
+}
+
+function renderPolaroids() {
+  if (!polaroidWall) return;
+
+  const featured = [...recipes]
+    .sort((a, b) => {
+      const photoDiff = Number(Boolean(b.photo)) - Number(Boolean(a.photo));
+      if (photoDiff) return photoDiff;
+      const madeDiff = Number(Boolean(b.made)) - Number(Boolean(a.made));
+      if (madeDiff) return madeDiff;
+      return a.title.localeCompare(b.title);
+    })
+    .slice(0, 4);
+
+  polaroidWall.innerHTML = featured.map((recipe, index) => {
+    const rating = ratingText(recipe.id);
+    const media = recipe.photo
+      ? `<img src="${escapeHTML(recipe.photo)}" alt="${escapeHTML(recipe.photoAlt || recipe.title)}">`
+      : `<div class="polaroid-placeholder"><span>${escapeHTML(recipe.title)}</span><small>${escapeHTML(recipe.photoStatus || 'Photo next time')}</small></div>`;
+
+    return `
+      <button class="polaroid polaroid-${index + 1}" type="button" data-polaroid-recipe="${escapeHTML(recipe.id)}" aria-label="Open ${escapeHTML(recipe.title)}">
+        <div class="polaroid-photo">${media}</div>
+        <div class="polaroid-caption">
+          <strong>${escapeHTML(recipe.title)}</strong>
+          <span>${rating || (recipe.made ? 'Made by us' : 'On the list')}</span>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  polaroidWall.querySelectorAll('[data-polaroid-recipe]').forEach(button => {
+    button.addEventListener('click', () => openRecipe(button.dataset.polaroidRecipe));
+  });
+}
+
 function renderFilters() {
   filters.innerHTML = categories.map(category => `
     <button class="filter-button ${category === activeFilter ? 'active' : ''}" type="button" data-filter="${escapeHTML(category)}">
@@ -75,14 +142,7 @@ function recipePhoto(recipe, size = 'card') {
 }
 
 function matches(recipe) {
-  const searchable = [
-    recipe.title,
-    recipe.summary,
-    recipe.category,
-    ...recipe.tags,
-    ...recipe.ingredients
-  ].join(' ').toLowerCase();
-
+  const searchable = [recipe.title, recipe.summary, recipe.category, ...recipe.tags, ...recipe.ingredients].join(' ').toLowerCase();
   const matchesSearch = !searchTerm || searchable.includes(searchTerm);
   const matchesFilter = activeFilter === 'All' || recipe.tags.includes(activeFilter);
   return matchesSearch && matchesFilter;
@@ -93,22 +153,26 @@ function renderRecipes() {
   count.textContent = `${filtered.length} ${filtered.length === 1 ? 'recipe' : 'recipes'}`;
   emptyState.hidden = filtered.length !== 0;
 
-  grid.innerHTML = filtered.map(recipe => `
-    <article class="recipe-card">
-      ${recipePhoto(recipe)}
-      <div class="recipe-card-body">
-        <div class="recipe-meta">
-          ${recipe.tags.slice(0, 3).map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}
+  grid.innerHTML = filtered.map(recipe => {
+    const rating = ratingText(recipe.id);
+    return `
+      <article class="recipe-card">
+        ${recipePhoto(recipe)}
+        <div class="recipe-card-body">
+          <div class="recipe-meta">
+            ${recipe.tags.slice(0, 3).map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}
+            ${rating ? `<span class="rating-chip">${rating}</span>` : ''}
+          </div>
+          <h3>${escapeHTML(recipe.title)}</h3>
+          <p>${escapeHTML(recipe.summary)}</p>
+          <div class="recipe-card-actions">
+            <button class="recipe-open" type="button" data-recipe="${escapeHTML(recipe.id)}">Open recipe →</button>
+            ${recipe.archive ? '<span class="archive-label">Archive recipe</span>' : ''}
+          </div>
         </div>
-        <h3>${escapeHTML(recipe.title)}</h3>
-        <p>${escapeHTML(recipe.summary)}</p>
-        <div class="recipe-card-actions">
-          <button class="recipe-open" type="button" data-recipe="${escapeHTML(recipe.id)}">Open recipe →</button>
-          ${recipe.archive ? '<span class="archive-label">Archive recipe</span>' : ''}
-        </div>
-      </div>
-    </article>
-  `).join('');
+      </article>
+    `;
+  }).join('');
 
   grid.querySelectorAll('.recipe-open').forEach(button => {
     button.addEventListener('click', () => openRecipe(button.dataset.recipe));
@@ -126,6 +190,7 @@ function renderPlanner() {
   planner.innerHTML = DAYS.map(day => {
     const selectedId = weekPlan[day] || '';
     const selectedRecipe = recipes.find(recipe => recipe.id === selectedId);
+    const rating = selectedRecipe ? ratingText(selectedRecipe.id) : '';
 
     return `
       <article class="day-card ${selectedRecipe ? 'has-meal' : ''}">
@@ -135,11 +200,9 @@ function renderPlanner() {
         </div>
         <label>
           <span class="sr-only">Dinner for ${day}</span>
-          <select class="day-select" data-day="${day}">
-            ${plannerOptions(selectedId)}
-          </select>
+          <select class="day-select" data-day="${day}">${plannerOptions(selectedId)}</select>
         </label>
-        <p class="day-detail">${selectedRecipe ? `${escapeHTML(selectedRecipe.category)} · ${escapeHTML(selectedRecipe.cook)}` : 'Nothing planned yet'}</p>
+        <p class="day-detail">${selectedRecipe ? `${escapeHTML(selectedRecipe.category)} · ${escapeHTML(selectedRecipe.cook)}${rating ? ` · ${rating}` : ''}` : 'Nothing planned yet'}</p>
       </article>
     `;
   }).join('');
@@ -185,12 +248,7 @@ function consolidatedShopping() {
       const existing = combined.get(key);
 
       if (!existing) {
-        combined.set(key, {
-          item: entry.item,
-          qty: entry.qty,
-          unit: entry.unit || '',
-          category: entry.category || 'Other'
-        });
+        combined.set(key, { item: entry.item, qty: entry.qty, unit: entry.unit || '', category: entry.category || 'Other' });
         return;
       }
 
@@ -204,17 +262,7 @@ function consolidatedShopping() {
 }
 
 function groupedShopping() {
-  const categoryOrder = [
-    'Fruit & veg',
-    'Meat & fish',
-    'Dairy & eggs',
-    'Tins & jars',
-    'Pasta, rice & grains',
-    'Baking',
-    'Pantry',
-    'Herbs & spices',
-    'Other'
-  ];
+  const categoryOrder = ['Fruit & veg', 'Meat & fish', 'Dairy & eggs', 'Tins & jars', 'Pasta, rice & grains', 'Bakery', 'Frozen', 'Baking', 'Pantry', 'Herbs & spices', 'Other'];
   const groups = new Map();
 
   consolidatedShopping().forEach(item => {
@@ -255,12 +303,7 @@ function renderShoppingList() {
     <section class="shopping-group">
       <h4>${escapeHTML(category)}</h4>
       <div class="shopping-items">
-        ${items.map(item => `
-          <label class="shopping-item">
-            <input type="checkbox">
-            <span>${escapeHTML(shoppingItemText(item))}</span>
-          </label>
-        `).join('')}
+        ${items.map(item => `<label class="shopping-item"><input type="checkbox"><span>${escapeHTML(shoppingItemText(item))}</span></label>`).join('')}
       </div>
     </section>
   `).join('');
@@ -271,19 +314,12 @@ function shoppingListText() {
   const selected = plannedRecipes();
   if (!selected.length) return '';
 
-  const planText = DAYS
-    .filter(day => weekPlan[day])
-    .map(day => {
-      const recipe = recipes.find(item => item.id === weekPlan[day]);
-      return `${day}: ${recipe ? recipe.title : ''}`;
-    })
-    .join('\n');
+  const planText = DAYS.filter(day => weekPlan[day]).map(day => {
+    const recipe = recipes.find(item => item.id === weekPlan[day]);
+    return `${day}: ${recipe ? recipe.title : ''}`;
+  }).join('\n');
 
-  const listText = groups.map(([category, items]) => {
-    const lines = items.map(item => `• ${shoppingItemText(item)}`).join('\n');
-    return `${category}\n${lines}`;
-  }).join('\n\n');
-
+  const listText = groups.map(([category, items]) => `${category}\n${items.map(item => `• ${shoppingItemText(item)}`).join('\n')}`).join('\n\n');
   return `LANGTON-COX DINNER PLAN\n${planText}\n\nSHOPPING LIST\n${listText}`;
 }
 
@@ -307,14 +343,72 @@ async function copyShoppingList() {
 
   const original = copyShoppingButton.textContent;
   copyShoppingButton.textContent = 'Copied ✓';
-  setTimeout(() => {
-    copyShoppingButton.textContent = original;
-  }, 1600);
+  setTimeout(() => { copyShoppingButton.textContent = original; }, 1600);
+}
+
+function renderRatingPanel(recipeId) {
+  const panel = detail.querySelector('#family-rating-panel');
+  if (!panel) return;
+
+  const entry = ratings[recipeId] || { scores: {}, note: '' };
+  const average = recipeRating(recipeId);
+
+  panel.innerHTML = `
+    <div class="rating-heading">
+      <div>
+        <p class="eyebrow">After dinner</p>
+        <h3>Family verdict</h3>
+        <p>${average ? `Current family score: <strong>${average.toFixed(1)} / 5</strong>` : 'Everyone gets one vote. No tactical voting.'}</p>
+      </div>
+      <div class="rating-average ${average ? 'has-rating' : ''}">${average ? `${average.toFixed(1)} ★` : 'Not rated'}</div>
+    </div>
+    <div class="family-ratings">
+      ${FAMILY.map(person => {
+        const score = Number(entry.scores?.[person]) || 0;
+        return `
+          <div class="family-rating-row">
+            <strong>${escapeHTML(person)}</strong>
+            <div class="star-buttons" aria-label="${escapeHTML(person)} rating">
+              ${[1,2,3,4,5].map(value => `<button type="button" class="star-button ${value <= score ? 'selected' : ''}" data-rating-person="${escapeHTML(person)}" data-rating-value="${value}" aria-label="${value} star${value === 1 ? '' : 's'}">★</button>`).join('')}
+            </div>
+            <span>${score ? `${score}/5` : 'Your vote'}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <label class="family-note">
+      <span><strong>Family note</strong> · what should we remember next time?</span>
+      <textarea id="family-note-input" rows="2" placeholder="More sauce, less cumin, definitely make again…">${escapeHTML(entry.note || '')}</textarea>
+    </label>
+  `;
+
+  panel.querySelectorAll('[data-rating-person]').forEach(button => {
+    button.addEventListener('click', () => {
+      const person = button.dataset.ratingPerson;
+      const value = Number(button.dataset.ratingValue);
+      ratings[recipeId] = ratings[recipeId] || { scores: {}, note: '' };
+      ratings[recipeId].scores = ratings[recipeId].scores || {};
+      ratings[recipeId].scores[person] = value;
+      saveRatings();
+      renderRatingPanel(recipeId);
+      renderRecipes();
+      renderPlanner();
+      renderPolaroids();
+    });
+  });
+
+  const noteInput = panel.querySelector('#family-note-input');
+  noteInput.addEventListener('change', () => {
+    ratings[recipeId] = ratings[recipeId] || { scores: {}, note: '' };
+    ratings[recipeId].note = noteInput.value.trim();
+    saveRatings();
+  });
 }
 
 function openRecipe(id, updateHash = true) {
   const recipe = recipes.find(item => item.id === id);
   if (!recipe) return;
+  const rating = ratingText(recipe.id);
 
   detail.innerHTML = `
     ${recipePhoto(recipe, 'detail')}
@@ -326,30 +420,20 @@ function openRecipe(id, updateHash = true) {
         <span class="detail-stat"><strong>Serves:</strong> ${escapeHTML(recipe.serves)}</span>
         <span class="detail-stat"><strong>Prep:</strong> ${escapeHTML(recipe.prep)}</span>
         <span class="detail-stat"><strong>Cook:</strong> ${escapeHTML(recipe.cook)}</span>
+        ${rating ? `<span class="detail-stat rating-stat"><strong>Family:</strong> ${rating}</span>` : ''}
       </div>
       <div class="add-to-plan">
-        <div>
-          <strong>Add to this week</strong>
-          <span>Choose a day and the shopping list updates automatically.</span>
-        </div>
+        <div><strong>Add to this week</strong><span>Choose a day and the shopping list updates automatically.</span></div>
         <div class="add-to-plan-controls">
-          <select id="detail-plan-day" aria-label="Choose day for ${escapeHTML(recipe.title)}">
-            ${DAYS.map(day => `<option value="${day}">${day}</option>`).join('')}
-          </select>
+          <select id="detail-plan-day" aria-label="Choose day for ${escapeHTML(recipe.title)}">${DAYS.map(day => `<option value="${day}">${day}</option>`).join('')}</select>
           <button id="detail-plan-add" class="primary-button button-control" type="button">Add</button>
         </div>
       </div>
       <div class="detail-columns">
-        <section>
-          <h3>Ingredients</h3>
-          <ul>${recipe.ingredients.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul>
-        </section>
-        <section>
-          <h3>Method</h3>
-          <ol>${recipe.method.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ol>
-          ${recipe.note ? `<div class="cook-note"><strong>Kitchen note:</strong> ${escapeHTML(recipe.note)}</div>` : ''}
-        </section>
+        <section><h3>Ingredients</h3><ul>${recipe.ingredients.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul></section>
+        <section><h3>Method</h3><ol>${recipe.method.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ol>${recipe.note ? `<div class="cook-note"><strong>Kitchen note:</strong> ${escapeHTML(recipe.note)}</div>` : ''}</section>
       </div>
+      <section id="family-rating-panel" class="family-rating-panel"></section>
     </div>
   `;
 
@@ -365,11 +449,10 @@ function openRecipe(id, updateHash = true) {
     renderPlanner();
     renderShoppingList();
     addButton.textContent = `Added to ${day} ✓`;
-    setTimeout(() => {
-      addButton.textContent = 'Add';
-    }, 1700);
+    setTimeout(() => { addButton.textContent = 'Add'; }, 1700);
   });
 
+  renderRatingPanel(recipe.id);
   if (!dialog.open) dialog.showModal();
   if (updateHash) history.replaceState(null, '', `#recipe=${recipe.id}`);
 }
@@ -385,14 +468,8 @@ searchInput.addEventListener('input', event => {
 });
 
 closeButton.addEventListener('click', closeRecipe);
-dialog.addEventListener('click', event => {
-  if (event.target === dialog) closeRecipe();
-});
-dialog.addEventListener('cancel', event => {
-  event.preventDefault();
-  closeRecipe();
-});
-
+dialog.addEventListener('click', event => { if (event.target === dialog) closeRecipe(); });
+dialog.addEventListener('cancel', event => { event.preventDefault(); closeRecipe(); });
 copyShoppingButton.addEventListener('click', copyShoppingList);
 clearPlanButton.addEventListener('click', () => {
   const hasMeals = Object.values(weekPlan).some(Boolean);
@@ -403,6 +480,7 @@ clearPlanButton.addEventListener('click', () => {
   renderShoppingList();
 });
 
+renderPolaroids();
 renderFilters();
 renderRecipes();
 renderPlanner();
