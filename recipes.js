@@ -9,6 +9,7 @@ window.RECIPES = [
     prep: "15 mins",
     cook: "30 mins",
     made: false,
+    archive: false,
     photo: "",
     photoAlt: "Smoky chicken, chorizo and chickpea stew",
     photoStatus: "Photo coming after dinner",
@@ -31,6 +32,22 @@ window.RECIPES = [
       "½ lemon",
       "Parsley or coriander, optional"
     ],
+    shopping: [
+      { item: "Chicken breasts", qty: 4, unit: "", category: "Meat & fish" },
+      { item: "Chorizo", qty: 150, unit: "g", category: "Meat & fish" },
+      { item: "Onions", qty: 1, unit: "", category: "Fruit & veg" },
+      { item: "Red peppers", qty: 1, unit: "", category: "Fruit & veg" },
+      { item: "Garlic cloves", qty: 3, unit: "", category: "Fruit & veg" },
+      { item: "Lemons", qty: 0.5, unit: "", category: "Fruit & veg" },
+      { item: "Chopped tomatoes", qty: 1, unit: "400 g tin", category: "Tins & jars" },
+      { item: "Chickpeas", qty: 1, unit: "400 g tin", category: "Tins & jars" },
+      { item: "Chicken stock", qty: 250, unit: "ml", category: "Pantry" },
+      { item: "Tomato purée", qty: 1, unit: "tbsp", category: "Pantry" },
+      { item: "Smoked paprika", qty: 1, unit: "tsp", category: "Herbs & spices" },
+      { item: "Ground cumin", qty: 0.5, unit: "tsp", category: "Herbs & spices" },
+      { item: "Dried oregano", qty: 0.5, unit: "tsp", category: "Herbs & spices" },
+      { item: "Parsley or coriander", qty: null, unit: "", category: "Fruit & veg" }
+    ],
     method: [
       "Season the chicken with salt, pepper and a little of the smoked paprika.",
       "Put a large deep frying pan or casserole over medium-high heat. Fry the chorizo for 3 to 4 minutes until it releases its oil. Remove and set aside.",
@@ -43,5 +60,139 @@ window.RECIPES = [
       "Finish with a good squeeze of lemon and plenty of black pepper. Add parsley or coriander if you have it."
     ],
     note: "For a thicker sauce, squash a few chickpeas against the side of the pan and stir them back in. Crumbled feta over the top is also excellent."
+  },
+  {
+    id: "slow-cooked-pork-beef-meatballs",
+    title: "Slow-Cooked Pork & Beef Meatballs",
+    summary: "The big-batch meatballs with hidden veg, red wine, bone broth and a long slow finish. Built for making early and forgetting about until dinner.",
+    category: "Slow cooker",
+    tags: ["Beef", "Pork", "Slow cooker", "Family dinner", "Archive"],
+    serves: "6",
+    prep: "35 mins",
+    cook: "5-6 hours",
+    made: true,
+    archive: true,
+    photo: "",
+    photoAlt: "Slow-cooked pork and beef meatballs in tomato sauce",
+    photoStatus: "Made before the site - photo next time",
+    ingredients: [
+      "852 g mixed pork and beef mince",
+      "75 g panko breadcrumbs",
+      "1 egg",
+      "1 small onion, very finely chopped",
+      "2 garlic cloves, finely chopped",
+      "1 small carrot, finely grated",
+      "1 small courgette, finely grated and squeezed dry",
+      "2 tbsp grated Parmesan",
+      "Salt, black pepper and dried oregano",
+      "1 tbsp olive oil",
+      "1 onion, diced for the sauce",
+      "2 garlic cloves, chopped for the sauce",
+      "2 tbsp tomato purée",
+      "150 ml red wine",
+      "2 x 400 g tins chopped tomatoes",
+      "250 ml bone broth or beef stock"
+    ],
+    shopping: [
+      { item: "Mixed pork and beef mince", qty: 852, unit: "g", category: "Meat & fish" },
+      { item: "Eggs", qty: 1, unit: "", category: "Dairy & eggs" },
+      { item: "Parmesan", qty: 30, unit: "g", category: "Dairy & eggs" },
+      { item: "Onions", qty: 2, unit: "", category: "Fruit & veg" },
+      { item: "Garlic cloves", qty: 4, unit: "", category: "Fruit & veg" },
+      { item: "Carrots", qty: 1, unit: "", category: "Fruit & veg" },
+      { item: "Courgettes", qty: 1, unit: "", category: "Fruit & veg" },
+      { item: "Panko breadcrumbs", qty: 75, unit: "g", category: "Pantry" },
+      { item: "Tomato purée", qty: 2, unit: "tbsp", category: "Pantry" },
+      { item: "Chopped tomatoes", qty: 2, unit: "400 g tin", category: "Tins & jars" },
+      { item: "Red wine", qty: 150, unit: "ml", category: "Pantry" },
+      { item: "Bone broth or beef stock", qty: 250, unit: "ml", category: "Pantry" },
+      { item: "Dried oregano", qty: 1, unit: "tsp", category: "Herbs & spices" }
+    ],
+    method: [
+      "Combine the mince, panko, egg, finely chopped onion and garlic, grated hidden veg, Parmesan and seasoning. Mix only until combined, then roll into meatballs.",
+      "Brown the meatballs in batches. Using the pan for some and the air fryer for another batch keeps a large quantity manageable.",
+      "For the sauce, soften the diced onion, add garlic and tomato purée, then pour in the red wine and let it reduce for a couple of minutes.",
+      "Add the chopped tomatoes and bone broth. Season and bring to a gentle simmer.",
+      "Transfer the sauce and browned meatballs to the slow cooker. Cook on low for around 5 to 6 hours.",
+      "Check the sauce before serving. If it is thinner than you want, finish uncovered in a pan for a few minutes. Serve with pasta, bread or both if nobody is pretending to be restrained."
+    ],
+    note: "Archive reconstruction from our August 2026 cook. The 852 g meat, panko, hidden veg, red wine, bone broth, batch browning and slow-cooker finish are from our actual cooking notes. Check the smaller quantities next time we make it."
+  },
+  {
+    id: "family-carbonara",
+    title: "Family Carbonara",
+    summary: "Fast, glossy and properly peppery. Our working family version of the dinner that immediately ruled out another creamy chicken dish the following night.",
+    category: "Pasta",
+    tags: ["Pasta", "Quick", "Family dinner", "Archive"],
+    serves: "4",
+    prep: "10 mins",
+    cook: "20 mins",
+    made: true,
+    archive: true,
+    photo: "",
+    photoAlt: "Family spaghetti carbonara",
+    photoStatus: "Made before the site - photo next time",
+    ingredients: [
+      "400 g spaghetti",
+      "180 g guanciale or pancetta, diced",
+      "4 eggs",
+      "100 g finely grated Pecorino, Parmesan or a mixture",
+      "Plenty of freshly ground black pepper",
+      "Salt for the pasta water"
+    ],
+    shopping: [
+      { item: "Spaghetti", qty: 400, unit: "g", category: "Pasta, rice & grains" },
+      { item: "Guanciale or pancetta", qty: 180, unit: "g", category: "Meat & fish" },
+      { item: "Eggs", qty: 4, unit: "", category: "Dairy & eggs" },
+      { item: "Pecorino or Parmesan", qty: 100, unit: "g", category: "Dairy & eggs" }
+    ],
+    method: [
+      "Bring a large pan of well-salted water to the boil and cook the spaghetti until just al dente. Reserve a mug of pasta water before draining.",
+      "While the pasta cooks, fry the guanciale or pancetta gently until the fat renders and the edges are crisp.",
+      "Beat the eggs with the grated cheese and a very generous amount of black pepper.",
+      "Take the meat pan off the heat. Add the drained pasta and toss well in the rendered fat.",
+      "Let the pan cool for a few seconds, then add the egg and cheese mixture while tossing continuously. Loosen with small splashes of reserved pasta water until glossy and creamy without using any cream.",
+      "Serve immediately with more cheese and black pepper."
+    ],
+    note: "Archive working version. We definitely made carbonara in August 2026, but the exact quantities were not preserved in the cooking notes. Confirm or tweak these amounts next time."
+  },
+  {
+    id: "family-pizza-dough",
+    title: "Family Pizza Dough",
+    summary: "A straightforward pizza dough for family pizza nights, including the summer sessions with the pizza oven in Spain.",
+    category: "Pizza",
+    tags: ["Pizza", "Baking", "Weekend", "Archive"],
+    serves: "4 pizzas",
+    prep: "20 mins + proving",
+    cook: "Depends on oven",
+    made: true,
+    archive: true,
+    photo: "",
+    photoAlt: "Homemade family pizza dough",
+    photoStatus: "Made before the site - photo next time",
+    ingredients: [
+      "500 g strong white or 00 flour",
+      "325 ml lukewarm water",
+      "7 g instant yeast",
+      "10 g fine salt",
+      "1 tbsp olive oil",
+      "Extra flour or semolina for shaping"
+    ],
+    shopping: [
+      { item: "Strong white or 00 flour", qty: 500, unit: "g", category: "Baking" },
+      { item: "Instant yeast", qty: 7, unit: "g", category: "Baking" },
+      { item: "Fine salt", qty: 10, unit: "g", category: "Pantry" },
+      { item: "Olive oil", qty: 1, unit: "tbsp", category: "Pantry" },
+      { item: "Semolina", qty: null, unit: "", category: "Baking" }
+    ],
+    method: [
+      "Mix the flour and yeast, then add most of the water and bring together into a rough dough.",
+      "Add the salt and remaining water as needed, then knead until smooth and elastic. Work in the olive oil near the end.",
+      "Cover and leave to rise until roughly doubled in size.",
+      "Divide into four balls, cover and rest again until relaxed and slightly puffy.",
+      "Shape by hand rather than rolling if possible. Add toppings lightly so the base can cook properly.",
+      "Bake as hot as your oven or pizza oven will comfortably go, using flour or semolina on the peel to stop sticking."
+    ],
+    note: "Archive reconstruction from our Spain pizza-oven cooking. We made pizza dough several times, but the exact hydration was not preserved. Treat this as the working house recipe and adjust after the next pizza night."
   }
 ];
