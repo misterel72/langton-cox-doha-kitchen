@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4efe6">
-  <meta name="description" content="Family recipes, favourites and food experiments from the Langton-Cox kitchen in Doha.">
+  <meta name="description" content="Family recipes, weekly meal planning and shopping lists from the Langton-Cox kitchen in Doha.">
   <title>Langton-Cox Doha Kitchen</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,7 @@
     </a>
     <nav aria-label="Main navigation">
       <a href="#recipes">Recipes</a>
+      <a href="#planner">Weekly planner</a>
       <a href="#about">Our kitchen</a>
     </nav>
   </header>
@@ -32,7 +33,10 @@
         <p class="eyebrow">Cooked in Doha · kept for the family</p>
         <h1>The recipes worth making <em>again.</em></h1>
         <p class="hero-intro">Family favourites, successful experiments and the occasional dinner that started with “what can we make with this?”</p>
-        <a class="primary-button" href="#recipes">See the recipes</a>
+        <div class="hero-actions">
+          <a class="primary-button" href="#recipes">See the recipes</a>
+          <a class="secondary-button" href="#planner">Plan the week</a>
+        </div>
       </div>
       <div class="hero-card" aria-hidden="true">
         <span class="scribble">Tonight’s pan</span>
@@ -61,6 +65,33 @@
 
       <div id="recipe-grid" class="recipe-grid" aria-live="polite"></div>
       <p id="empty-state" class="empty-state" hidden>No recipes match that one. Either the search is too ambitious or dinner hasn't happened yet.</p>
+    </section>
+
+    <section class="planner-section" id="planner">
+      <div class="planner-inner">
+        <div class="section-heading planner-heading">
+          <div>
+            <p class="eyebrow">This week</p>
+            <h2>Dinner, sorted.</h2>
+            <p class="section-intro">Choose a recipe for each day. Your shopping list updates automatically and combines matching ingredients.</p>
+          </div>
+          <button id="clear-plan" class="text-button" type="button">Clear week</button>
+        </div>
+
+        <div id="weekly-planner" class="weekly-planner" aria-label="Weekly dinner planner"></div>
+
+        <div class="shopping-panel">
+          <div class="shopping-heading">
+            <div>
+              <p class="eyebrow">Generated for you</p>
+              <h3>Weekly shopping list</h3>
+              <p id="shopping-summary" class="shopping-summary">Add dinners above and the list will build itself.</p>
+            </div>
+            <button id="copy-shopping" class="secondary-button button-control" type="button">Copy list</button>
+          </div>
+          <div id="shopping-list" class="shopping-list" aria-live="polite"></div>
+        </div>
+      </div>
     </section>
 
     <section class="about" id="about">
