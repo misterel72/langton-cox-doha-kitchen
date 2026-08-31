@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4efe6">
+  <meta name="description" content="Family recipes, favourites and food experiments from the Langton-Cox kitchen in Doha.">
+  <title>Langton-Cox Doha Kitchen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Langton-Cox Doha Kitchen home">
+      <span class="brand-mark">LC</span>
+      <span>
+        <strong>Langton-Cox</strong>
+        <small>Doha Kitchen</small>
+      </span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#recipes">Recipes</a>
+      <a href="#about">Our kitchen</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Cooked in Doha · kept for the family</p>
+        <h1>The recipes worth making <em>again.</em></h1>
+        <p class="hero-intro">Family favourites, successful experiments and the occasional dinner that started with “what can we make with this?”</p>
+        <a class="primary-button" href="#recipes">See the recipes</a>
+      </div>
+      <div class="hero-card" aria-hidden="true">
+        <span class="scribble">Tonight’s pan</span>
+        <div class="plate plate-one"></div>
+        <div class="plate plate-two"></div>
+        <p>Doha<br><strong>2026</strong></p>
+      </div>
+    </section>
+
+    <section class="recipe-section" id="recipes">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">The family cookbook</p>
+          <h2>What are we cooking?</h2>
+        </div>
+        <p id="recipe-count" class="recipe-count"></p>
+      </div>
+
+      <div class="recipe-tools">
+        <label class="search-box">
+          <span class="sr-only">Search recipes</span>
+          <input id="recipe-search" type="search" placeholder="Search chicken, quick, one-pot…" autocomplete="off">
+        </label>
+        <div id="filter-buttons" class="filter-buttons" aria-label="Filter recipes"></div>
+      </div>
+
+      <div id="recipe-grid" class="recipe-grid" aria-live="polite"></div>
+      <p id="empty-state" class="empty-state" hidden>No recipes match that one. Either the search is too ambitious or dinner hasn't happened yet.</p>
+    </section>
+
+    <section class="about" id="about">
+      <div>
+        <p class="eyebrow">Why this exists</p>
+        <h2>A family cookbook that grows as we cook.</h2>
+      </div>
+      <div class="about-copy">
+        <p>This is our Doha kitchen archive. The useful recipes stay, the tweaks get recorded, and the real photo gets added after we actually make the dish.</p>
+        <p>No stock photography. No twelve-paragraph story about discovering garlic on a Tuscan hillside. Just food we cooked and would happily cook again.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Langton-Cox Doha Kitchen</p>
+    <p>Built one dinner at a time.</p>
+  </footer>
+
+  <dialog id="recipe-dialog" class="recipe-dialog">
+    <button class="dialog-close" type="button" aria-label="Close recipe">×</button>
+    <div id="recipe-detail"></div>
+  </dialog>
+
+  <script src="recipes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
